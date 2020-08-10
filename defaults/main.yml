@@ -1,0 +1,31 @@
+# Delegate vmware_* modules calls to this host.
+# May be any VCenter controller node  (e.g. custom Ansible host or dedicated host).
+vmware_guest_delegated_host: localhost
+
+# Validate VCenter certificate.
+vmware_guest_validate_certs: False
+
+# Virtual machine networks.
+# Syntax: https://docs.ansible.com/ansible/latest/modules/vmware_guest_module.html#parameter-networks
+vmware_guest_networks: []
+
+# Virtual machine hardware.
+# Syntax: https://docs.ansible.com/ansible/latest/modules/vmware_guest_module.html#parameter-networks
+vmware_guest_hardware: {}
+
+# Virtual machines labels.
+vmware_guest_customvalues:
+  - key: "ptech.vm.management"
+    value: "ansible"
+  - key: "ptech.vm.ansible.inventory"
+    value: "{{ inventory_file }}"
+
+# Components to initialize after VM creation.
+vmware_guest_init: []
+
+# Netplan configuration and path.
+vmware_guest_init_netplan: {}
+vmware_guest_init_netplan_path: "/etc/netplan/00-automated.yaml"
+
+# Sudo cleanup configuration.
+vmware_sudo_init_sudo_path: "/etc/sudoers/00-ansible-vmware_guest"

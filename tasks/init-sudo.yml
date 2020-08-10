@@ -1,0 +1,21 @@
+- name: Initialize sudo (cleanup pre-init conf)
+  vmware_vm_shell:
+    hostname: "{{ vmware_guest_hostname }}"
+    username: "{{ vmware_guest_username }}"
+    password: "{{ vmware_guest_password }}"
+    validate_certs: "{{ vmware_guest_validate_certs }}"
+    # ---
+    vm_id: "{{ vmware_guest_name }}"
+    folder: "{{ vmware_guest_folder }}"
+    # ---
+    vm_username: ubuntu
+    vm_password: ubuntu
+    vm_shell: "/bin/bash"
+    vm_shell_args: "-c 'sudo rm {{ vmware_sudo_init_sudo_path }}'"
+    vm_shell_cwd: "/"
+  delegate_to: "{{ vmware_guest_delegated_host }}"
+  register: _init_sudo
+  until: not _init_sudo.failed
+  retries: 1
+  delay: 10
+  tags: [never, setup, init]

@@ -1,0 +1,90 @@
+- name: Assertions (generic)
+  assert:
+    that:
+      # VCenter connection
+      - vmware_guest_hostname | default('') | length > 0
+      - vmware_guest_username | default('') | length > 0
+      - vmware_guest_password | default('') | length > 0
+      # Guest virtual machine selectors
+      - vmware_guest_datacenter | default('') | length > 0
+      - vmware_guest_name | default('') | length > 0
+  delegate_to: "{{ vmware_guest_delegated_host }}"
+  tags: [always]
+
+
+- name: Assertions (setup)
+  assert:
+    that:
+      # Guest virtual machine location
+      - vmware_guest_folder | default('') | length > 0
+      - vmware_guest_resource_pool | default('') | length > 0
+      # Either specify a template or necessary variables to create a VM without template
+      - (vmware_guest_template | default('') | length > 0) or (vmware_guest_guest_id | default('') | length > 0)
+  delegate_to: "{{ vmware_guest_delegated_host }}"
+  tags: [never, setup]
+
+
+# ---
+
+
+- name: Create Virtual Machine
+  vmware_guest:
+    hostname: "{{ vmware_guest_hostname }}"
+    username: "{{ vmware_guest_username }}"
+    password: "{{ vmware_guest_password }}"
+    validate_certs: "{{ vmware_guest_validate_certs }}"
+    # ---
+    datacenter: "{{ vmware_guest_datacenter }}"
+    resource_pool: "{{ vmware_guest_resource_pool }}"
+    # ---
+    name: "{{ vmware_guest_name }}"
+    folder: "{{ vmware_guest_folder }}"
+    # ---
+    template: "{{ vmware_guest_template }}"
+    networks: "{{ vmware_guest_networks }}"
+    hardware: "{{ vmware_guest_hardware }}"
+    # ---
+    state: poweredon
+  delegate_to: "{{ vmware_guest_delegated_host }}"
+  tags: [never, setup]
+
+
+- name: Initialize components
+  include_tasks:
+    file: "init-{{ item }}.yml"
+  with_items: "{{ vmware_guest_init }}"
+  tags: [never, setup, init]
+
+
+# ---
+
+
+- name: Gracefully shutdown Virtual Machine
+  vmware_guest:
+    hostname: "{{ vmware_guest_hostname }}"
+    username: "{{ vmware_guest_username }}"
+    password: "{{ vmware_guest_password }}"
+    validate_certs: "{{ vmware_guest_validate_certs }}"
+    # ---
+    name: "{{ vmware_guest_name }}"
+    # ---
+    state: poweredoff
+  delegate_to: "{{ vmware_guest_delegated_host }}"
+  register: _shutdown_vm
+  failed_when:
+    - _shutdown_vm.failed and _shutdown_vm.msg != "Folder is required parameter while deploying new virtual machine"
+  tags: [never, teardown]
+
+
+- name: Delete Virtual Machine
+  vmware_guest:
+    hostname: "{{ vmware_guest_hostname }}"
+    username: "{{ vmware_guest_username }}"
+    password: "{{ vmware_guest_password }}"
+    validate_certs: "{{ vmware_guest_validate_certs }}"
+    # ---
+    name: "{{ vmware_guest_name }}"
+    # ---
+    state: absent
+  delegate_to: "{{ vmware_guest_delegated_host }}"
+  tags: [never, teardown]

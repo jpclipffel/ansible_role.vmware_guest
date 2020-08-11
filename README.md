@@ -9,23 +9,104 @@ This role can:
 
 ## Tags
 
-| Tag        | Description                       |
-|------------|-----------------------------------|
-| `setup`    | Create and configure the guest VM |
-| `teardown` | Shutdown and delete the guest VM  |
+| Tag        | Description                      |
+|------------|----------------------------------|
+| `setup`    | Create and the guest VM          |
+| `init`     | Initialize guest OS              |
+| `teardown` | Shutdown and delete the guest VM |
 
 ## Variables
 
-To do: Add `vmware_guest_*` variables targeting `vmware_guest` module.
+### Connection variables
 
-| Variable                         | Type               | Required | Default                                | Description                                                     |
-|----------------------------------|--------------------|----------|----------------------------------------|-----------------------------------------------------------------|
-| `vmware_sudo_init_sudo_path`     | `string`           | No       | `/etc/sudoers/00-ansible-vmware_guest` | Guest's pre-init `sudoers` file path                            |
-| `vmware_guest_validate_certs`    | `bool`             | No       | `False`                                | Check VMWare API certificate nor not                            |
-| `vmware_guest_networks`          | `list` of `map`    | No       | `[]` (empty list)                      | List of guest networks                                          |
-| `vmware_guest_init`              | `list` or `string` | No       | `[]` (empty list)                      | Guest components to initialize                                  |
-| `vmware_guest_init_netplan`      | `map`              | No       | `{}` (empty map)                       | Guest's `netplan` configuration content                         |
-| `vmware_guest_init_netplan_path` | `string`           | No       | `/etc/netplan/00-automated.yaml`       | Guest's `netplan` configuration path                            |
-| `vmware_guest_hardware`          | `map`              | No       | `{}` (empty map                        | Guest VM hardware                                               |
-| `vmware_guest_delegated_host`    | `string`           | No       | `localhost`                            | Host accessing VMWare API (Ansible controller or dedicated node |
+| Variable                      | Type     | Required | Default     | Description                                                     |
+|-------------------------------|----------|----------|-------------|-----------------------------------------------------------------|
+| `vmware_guest_hostname`       | `string` | Yes      | -           | VCenter hostname                                                |
+| `vmware_guest_username`       | `string` | Yes      | -           | VCenter username                                                |
+| `vmware_guest_password`       | `string` | Yes      | -           | VCenter password                                                |
+| `vmware_guest_validate_certs` | `bool`   | No       | `False`     | Check VMWare API certificate nor not                            |
+| `vmware_guest_delegated_host` | `string` | No       | `localhost` | Host accessing VMWare API (Ansible controller or dedicated node |
 
+### VM variables
+
+| Variable                     | Type            | Required | Default           | Description            |
+|------------------------------|-----------------|----------|-------------------|------------------------|
+| `vmware_guest_name`          | `string`        | Yes      | -                 | Guest VM name          |
+| `vmware_guest_folder`        | `string`        | Yes      | -                 | Guest VM folder        |
+| `vmware_guest_resource_pool` | `string`        | Yes      | -                 | Guest VM resource pool |
+| `vmware_guest_datacenter`    | `yes`           | Yes      | -                 | Guest VM datacenter    |
+| `vmware_guest_networks`      | `list` of `map` | No       | `[]` (empty list) | List of guest networks |
+| `vmware_guest_hardware`      | `map`           | No       | `{}` (empty map   | Guest VM hardware      |
+
+## Init variables
+
+| Variable                         | Type               | Required             | Default                                | Description                             |
+|----------------------------------|--------------------|----------------------|----------------------------------------|-----------------------------------------|
+| `vmware_guest_vm_username`       | `string`           | Only if using `init` | -                                      | Guest OS username                       |
+| `vmware_guest_vm_password`       | `string`           | Only if using `init` | -                                      | Guest OS password                       |
+| `vmware_guest_vm_shell`          | `string`           | No                   | `/bin/bash`                            | Guest OS shell                          |
+| `vmware_guest_init`              | `list` of `string` | No                   | `[]` (empty list)                      | Guest components to initialize          |
+| `vmware_guest_init_netplan`      | `map`              | No                   | `{}` (empty map)                       | Guest's `netplan` configuration content |
+| `vmware_guest_init_netplan_path` | `string`           | No                   | `/etc/netplan/00-automated.yaml`       | Guest's `netplan` configuration path    |
+| `vmware_sudo_init_sudo_path`     | `string`           | No                   | `/etc/sudoers/00-ansible-vmware_guest` | Guest's pre-init `sudoers` file path    |
+
+## Inventory setup
+
+It is advised to maintain common VMWare variables (e.g. VMWare hostname and datacenter) into a dedicated `group_vars` file.
+
+Ultimately, all `vmware_guest_*` variables could be seen as common and put into `group_vars`, beside the VM name and some `vmware_guest_init_` fragments, as the IP addresse(s).
+
+Example inventory structure:
+
+```
+inventories/vm_inventory/       # Your inventory
+\__ hosts                       # Hosts list and groups
+\__ group_vars/                 # Inventory groups variables
+    \__ vmware_guests.yml       # vmware guests (this role) common variables
+```
+
+Example `hosts` file structure:
+
+```yaml
+all:
+  hosts:
+    your-vm-name.tld:
+
+  children:
+    vmware_guests:
+      hosts:
+        your-vm-name.tld:
+          # ---
+          vmware_guest_name: "your-vm-name"
+          vmware_guest_folder: "path/to/your/vm/folder"
+          vmware_guest_template: "ubuntu-20.04"
+          # ---
+          # Your VM network(s)
+          vmware_guest_networks:
+            - name: "someNetworkName"
+          # ---
+          # Guest OS configuration credentials and components list to configure.
+          vmware_guest_vm_username: ubuntu
+          vmwar_guest_vm_password: ubuntu
+          vmware_guest_init: [netplan]
+          # ---
+          # Guest OS netplan configuration (will be injected into guest OS)
+          vmware_guest_init_netplan:
+            network:
+              version: 2
+              ethernets:
+                ens160:
+                  addresses: ["172.29.252.41/24"]
+                  gateway4: "172.29.252.1"
+                  nameservers:
+                    addresses: ["172.29.245.1"]
+                    search: ["your.tld"]
+```
+
+Example `group_vars/vmware_guests` structure:
+
+```yaml
+vmware_guest_hostname: "vcenter-name.vcloud"
+vmware_guest_datacenter: "vcenter-datacenter"
+vmware_guest_resource_pool: "some resource pool name"
+```

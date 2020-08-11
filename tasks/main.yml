@@ -1,3 +1,16 @@
+- name: Setup vCenter facts from AWX
+  set_fact:
+    vmware_guest_hostname: "{{ VMWARE_HOST }}"
+    vmware_guest_username: "{{ VMWARE_USER }}"
+    vmware_guest_password: "{{ VMWARE_PASSWORD }}"
+  when:
+    - VMWARE_HOST is defined
+    - VMWARE_USER is defined
+    - VMWARE_PASSWORD is defined
+  delegate_to: "{{ vmware_guest_delegated_host }}"
+  tags: [always]
+
+
 - name: Assertions (generic)
   assert:
     that:
@@ -20,6 +33,8 @@
       - vmware_guest_resource_pool | default('') | length > 0
       # Either specify a template or necessary variables to create a VM without template
       - (vmware_guest_template | default('') | length > 0) or (vmware_guest_guest_id | default('') | length > 0)
+      # VM init variables
+      - vmware_guest_init | length > 0 and (vmware_guest_vm_username | default('') | length > 0 and vmware_guest_vm_password | default('') | length > 0) or vmware_guest_init | length < 1
   delegate_to: "{{ vmware_guest_delegated_host }}"
   tags: [never, setup]
 
@@ -49,11 +64,14 @@
   tags: [never, setup]
 
 
+# ---
+
+
 - name: Initialize components
   include_tasks:
     file: "init-{{ item }}.yml"
   with_items: "{{ vmware_guest_init }}"
-  tags: [never, setup, init]
+  tags: [never, init]
 
 
 # ---

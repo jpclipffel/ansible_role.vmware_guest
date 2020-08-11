@@ -8,9 +8,9 @@
     vm_id: "{{ vmware_guest_name }}"
     folder: "{{ vmware_guest_folder }}"
     # ---
-    vm_username: ubuntu
-    vm_password: ubuntu
-    vm_shell: "/bin/bash"
+    vm_username: "{{ vmware_guest_vm_username }}"
+    vm_password: "{{ vmware_guest_vm_password }}"
+    vm_shell: "{{ vmware_guest_vm_shell }}"
     vm_shell_args: "-c 'sudo rm {{ vmware_sudo_init_sudo_path }}'"
     vm_shell_cwd: "/"
   delegate_to: "{{ vmware_guest_delegated_host }}"
@@ -18,4 +18,4 @@
   until: not _init_sudo.failed
   retries: 1
   delay: 10
-  tags: [never, setup, init]
+  tags: [never, init]

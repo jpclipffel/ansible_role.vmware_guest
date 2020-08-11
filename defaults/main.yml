@@ -20,6 +20,11 @@ vmware_guest_customvalues:
   - key: "ptech.vm.ansible.inventory"
     value: "{{ inventory_file }}"
 
+# VM shell, username and password for init operations.
+vmware_guest_vm_shell: "/bin/bash"
+# vmware_guest_vm_username:
+# vmware_guest_vm_password:
+
 # Components to initialize after VM creation.
 vmware_guest_init: []
 

@@ -1,12 +1,12 @@
 - name: Setup vCenter facts from AWX
   set_fact:
-    vmware_guest_hostname: "{{ VMWARE_HOST }}"
-    vmware_guest_username: "{{ VMWARE_USER }}"
-    vmware_guest_password: "{{ VMWARE_PASSWORD }}"
+    vmware_guest_hostname: "{{ lookup('env', 'VMWARE_HOST') }}"
+    vmware_guest_username: "{{ lookup('env', 'VMWARE_USER') }}"
+    vmware_guest_password: "{{ lookup('env', 'VMWARE_PASSWORD') }}"
   when:
-    - VMWARE_HOST is defined
-    - VMWARE_USER is defined
-    - VMWARE_PASSWORD is defined
+    - lookup('env', 'VMWARE_HOST') | default('') | length > 0
+    - lookup('env', 'VMWARE_USER') | default('') | length > 0
+    - lookup('env', 'VMWARE_PASSWORD') | default('') | length > 0
   delegate_to: "{{ vmware_guest_delegated_host }}"
   tags: [always]
 

@@ -40,6 +40,13 @@ This role can:
 
 ## Init variables
 
+This role can initialize several base guest components. The components list to initialize is named `vmware_guest_init`. Example :
+
+```yaml
+# Initialize guest's Netplan configuration, new password and sudo cleanup
+vmware_guest_init: [netplan, password, sudo]
+```
+
 | Variable                         | Type               | Required             | Default                                | Description                             |
 |----------------------------------|--------------------|----------------------|----------------------------------------|-----------------------------------------|
 | `vmware_guest_vm_username`       | `string`           | Only if using `init` | -                                      | Guest OS username                       |
@@ -48,7 +55,22 @@ This role can:
 | `vmware_guest_init`              | `list` of `string` | No                   | `[]` (empty list)                      | Guest components to initialize          |
 | `vmware_guest_init_netplan`      | `map`              | No                   | `{}` (empty map)                       | Guest's `netplan` configuration content |
 | `vmware_guest_init_netplan_path` | `string`           | No                   | `/etc/netplan/00-automated.yaml`       | Guest's `netplan` configuration path    |
+| `vmware_guest_init_password`     | `string`           | No                   | -                                      | Guest's default account new password    |
 | `vmware_sudo_init_sudo_path`     | `string`           | No                   | `/etc/sudoers/00-ansible-vmware_guest` | Guest's pre-init `sudoers` file path    |
+
+## Init components
+
+### Init component - `netplan`
+
+Write the netplan configuration stored in variable `{{ vmware_guest_init_netplan }}` (as a map) to the guest in the file `{{ vmware_guest_init_netplan_path }}`.
+
+### Init component - `password`
+
+Update the default user account's password with a newly generated one or the provided password.
+
+### Init component - `sudo`
+
+Cleanup the *sudoers* file located at `{{ vmware_sudo_init_sudo_path }}` which may have been created before the guest setup (e.g. when using a template).
 
 ## Inventory setup
 

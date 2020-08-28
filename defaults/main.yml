@@ -32,5 +32,8 @@ vmware_guest_init: []
 vmware_guest_init_netplan: {}
 vmware_guest_init_netplan_path: "/etc/netplan/00-automated.yaml"
 
+# Default user account password configuration.
+vmware_guest_init_password: ''
+
 # Sudo cleanup configuration.
 vmware_sudo_init_sudo_path: "/etc/sudoers/00-ansible-vmware_guest"

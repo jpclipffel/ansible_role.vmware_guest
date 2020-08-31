@@ -1,3 +1,6 @@
+# code: language=Ansible insertSpaces=true tabSize=2
+
+
 - name: Initialize sudo (cleanup pre-init conf)
   vmware_vm_shell:
     hostname: "{{ vmware_guest_hostname }}"
@@ -8,10 +11,10 @@
     vm_id: "{{ vmware_guest_name }}"
     folder: "{{ vmware_guest_folder }}"
     # ---
-    vm_username: "{{ vmware_guest_vm_username }}"
-    vm_password: "{{ vmware_guest_vm_password }}"
+    vm_username: "{{ _vmware_guest_vm_username }}"
+    vm_password: "{{ _vmware_guest_vm_password }}"
     vm_shell: "{{ vmware_guest_vm_shell }}"
-    vm_shell_args: "-c 'sudo rm {{ vmware_sudo_init_sudo_path }}'"
+    vm_shell_args: "-c 'sudo rm {{ vmware_guest_init_sudo_path }}'"
     vm_shell_cwd: "/"
   delegate_to: "{{ vmware_guest_delegated_host }}"
   register: _init_sudo

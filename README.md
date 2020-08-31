@@ -56,7 +56,7 @@ vmware_guest_init: [netplan, password, sudo]
 | `vmware_guest_init_netplan`      | `map`              | No                   | `{}` (empty map)                       | Guest's `netplan` configuration content |
 | `vmware_guest_init_netplan_path` | `string`           | No                   | `/etc/netplan/00-automated.yaml`       | Guest's `netplan` configuration path    |
 | `vmware_guest_init_password`     | `string`           | No                   | -                                      | Guest's default account new password    |
-| `vmware_sudo_init_sudo_path`     | `string`           | No                   | `/etc/sudoers/00-ansible-vmware_guest` | Guest's pre-init `sudoers` file path    |
+| `vmware_guest_init_sudo_path`    | `string`           | No                   | `/etc/sudoers/00-ansible-vmware_guest` | Guest's pre-init `sudoers` file path    |
 
 ## Init components
 

@@ -1,3 +1,6 @@
+# code: language=Ansible insertSpaces=true tabSize=2
+
+
 - name: Initialize netplan
   vmware_vm_shell:
     hostname: "{{ vmware_guest_hostname }}"
@@ -8,8 +11,8 @@
     vm_id: "{{ vmware_guest_name }}"
     folder: "{{ vmware_guest_folder }}"
     # ---
-    vm_username: "{{ vmware_guest_vm_username }}"
-    vm_password: "{{ vmware_guest_vm_password }}"
+    vm_username: "{{ _vmware_guest_vm_username }}"
+    vm_password: "{{ _vmware_guest_vm_password }}"
     vm_shell: "{{ vmware_guest_vm_shell }}"
     vm_shell_args: >
       -c '

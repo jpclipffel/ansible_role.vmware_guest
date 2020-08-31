@@ -1,3 +1,6 @@
+# code: language=Ansible insertSpaces=true tabSize=2
+
+
 - name: Setup vCenter facts from AWX
   set_fact:
     vmware_guest_hostname: "{{ lookup('env', 'VMWARE_HOST') }}"
@@ -51,6 +54,7 @@
     # ---
     datacenter: "{{ vmware_guest_datacenter }}"
     resource_pool: "{{ vmware_guest_resource_pool }}"
+    datastore: "{{ vmware_guest_datastore }}"
     # ---
     name: "{{ vmware_guest_name }}"
     folder: "{{ vmware_guest_folder }}"
@@ -58,6 +62,7 @@
     template: "{{ vmware_guest_template }}"
     networks: "{{ vmware_guest_networks }}"
     hardware: "{{ vmware_guest_hardware }}"
+    disk: "{{ vmware_guest_disks }}"
     # ---
     state: poweredon
   delegate_to: "{{ vmware_guest_delegated_host }}"
@@ -65,12 +70,22 @@
 
 
 # ---
+# Initialize VM.
+# Take care to disable 'sudo' at the end, otherwise other tasks may fails.
+
+- name: Set Virtual Machine dynamic facts
+  set_fact:
+    _vmware_guest_vm_username: "{{ vmware_guest_vm_username | default('') }}"
+    _vmware_guest_vm_password: "{{ vmware_guest_vm_password | default('') }}"
+  tags: [never, init]
 
 
-- name: Initialize components
+- name: Initialize Virtual Machine
   include_tasks:
     file: "init-{{ item }}.yml"
-  with_items: "{{ vmware_guest_init }}"
+  when:
+    - "item in vmware_guest_init"
+  with_items: [netplan, password, sudo]
   tags: [never, init]
 
 

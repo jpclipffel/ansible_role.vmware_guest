@@ -5,6 +5,10 @@ vmware_guest_delegated_host: localhost
 # Validate VCenter certificate.
 vmware_guest_validate_certs: False
 
+# Virtual machine datastore.
+# Syntax: https://docs.ansible.com/ansible/latest/modules/vmware_guest_module.html#parameter-datastore
+vmware_guest_datastore: "autoselect_datastore"
+
 # Virtual machine networks.
 # Syntax: https://docs.ansible.com/ansible/latest/modules/vmware_guest_module.html#parameter-networks
 vmware_guest_networks: []
@@ -12,6 +16,10 @@ vmware_guest_networks: []
 # Virtual machine hardware.
 # Syntax: https://docs.ansible.com/ansible/latest/modules/vmware_guest_module.html#parameter-networks
 vmware_guest_hardware: {}
+
+# Virtual machine hardware.
+# Syntax: https://docs.ansible.com/ansible/latest/modules/vmware_guest_module.html#parameter-disk
+vmware_guest_disks: []
 
 # Virtual machines labels.
 vmware_guest_customvalues:
@@ -36,4 +44,4 @@ vmware_guest_init_netplan_path: "/etc/netplan/00-automated.yaml"
 vmware_guest_init_password: ''
 
 # Sudo cleanup configuration.
-vmware_sudo_init_sudo_path: "/etc/sudoers/00-ansible-vmware_guest"
+vmware_guest_init_sudo_path: "/etc/sudoers.d/00-ansible-vmware_guest"

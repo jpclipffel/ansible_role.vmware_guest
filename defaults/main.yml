@@ -7,7 +7,7 @@ vmware_guest_validate_certs: False
 
 # Virtual machine datastore.
 # Syntax: https://docs.ansible.com/ansible/latest/modules/vmware_guest_module.html#parameter-datastore
-vmware_guest_datastore: "autoselect_datastore"
+# vmware_guest_datastore: ""
 
 # Virtual machine networks.
 # Syntax: https://docs.ansible.com/ansible/latest/modules/vmware_guest_module.html#parameter-networks
@@ -19,7 +19,7 @@ vmware_guest_hardware: {}
 
 # Virtual machine hardware.
 # Syntax: https://docs.ansible.com/ansible/latest/modules/vmware_guest_module.html#parameter-disk
-vmware_guest_disks: []
+# vmware_guest_disks: []
 
 # Virtual machines labels.
 vmware_guest_customvalues:

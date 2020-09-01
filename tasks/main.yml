@@ -24,6 +24,7 @@
       # Guest virtual machine selectors
       - vmware_guest_datacenter | default('') | length > 0
       - vmware_guest_name | default('') | length > 0
+      - vmware_guest_datastore | default('') | length > 0
   delegate_to: "{{ vmware_guest_delegated_host }}"
   tags: [always]
 
@@ -62,7 +63,6 @@
     template: "{{ vmware_guest_template }}"
     networks: "{{ vmware_guest_networks }}"
     hardware: "{{ vmware_guest_hardware }}"
-    disk: "{{ vmware_guest_disks }}"
     # ---
     state: poweredon
   delegate_to: "{{ vmware_guest_delegated_host }}"
@@ -85,7 +85,7 @@
     file: "init-{{ item }}.yml"
   when:
     - "item in vmware_guest_init"
-  with_items: [netplan, password, sudo]
+  with_items: [hostname, netplan, password, sudo]
   tags: [never, init]
 
 

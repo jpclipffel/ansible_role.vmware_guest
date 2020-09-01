@@ -19,6 +19,6 @@
   delegate_to: "{{ vmware_guest_delegated_host }}"
   register: _init_sudo
   until: not _init_sudo.failed
-  retries: 1
+  retries: 2
   delay: 10
   tags: [never, init]

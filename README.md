@@ -44,7 +44,7 @@ This role can initialize several base guest components. The components list to i
 
 ```yaml
 # Initialize guest's Netplan configuration, new password and sudo cleanup
-vmware_guest_init: [netplan, password, sudo]
+vmware_guest_init: [hostname, netplan, sudo, password]
 ```
 
 | Variable                         | Type               | Required             | Default                                | Description                             |
@@ -57,6 +57,7 @@ vmware_guest_init: [netplan, password, sudo]
 | `vmware_guest_init_netplan_path` | `string`           | No                   | `/etc/netplan/00-automated.yaml`       | Guest's `netplan` configuration path    |
 | `vmware_guest_init_password`     | `string`           | No                   | -                                      | Guest's default account new password    |
 | `vmware_guest_init_sudo_path`    | `string`           | No                   | `/etc/sudoers/00-ansible-vmware_guest` | Guest's pre-init `sudoers` file path    |
+| `vmware_guest_init_hostname`     | `string`           | No                   | `{{ vmware_guest_name }}`              | Guest's hostname                        |
 
 ## Init components
 

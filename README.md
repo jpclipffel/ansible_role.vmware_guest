@@ -61,6 +61,10 @@ vmware_guest_init: [hostname, netplan, sudo, password]
 
 ## Init components
 
+### Init component - `hostname`
+
+Set the hostname either to `{{ vmware_guest_init_hostname }}` or `{{ vmware_guest_name }}`.
+
 ### Init component - `netplan`
 
 Write the netplan configuration stored in variable `{{ vmware_guest_init_netplan }}` (as a map) to the guest in the file `{{ vmware_guest_init_netplan_path }}`.

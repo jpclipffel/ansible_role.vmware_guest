@@ -1,0 +1,25 @@
+# code: language=Ansible insertSpaces=true tabSize=2
+
+
+- name: Initialize hostname
+  vmware_vm_shell:
+    hostname: "{{ vmware_guest_hostname }}"
+    username: "{{ vmware_guest_username }}"
+    password: "{{ vmware_guest_password }}"
+    validate_certs: "{{ vmware_guest_validate_certs }}"
+    # ---
+    vm_id: "{{ vmware_guest_name }}"
+    folder: "{{ vmware_guest_folder }}"
+    # ---
+    vm_username: "{{ _vmware_guest_vm_username }}"
+    vm_password: "{{ _vmware_guest_vm_password }}"
+    vm_shell: "{{ vmware_guest_vm_shell }}"
+    vm_shell_args: >
+      -c 'sudo hostnamectl set-hostname "{{ vmware_guest_init_hostname | default(vmware_guest_name) }}"'
+    vm_shell_cwd: "/"
+  delegate_to: "{{ vmware_guest_delegated_host }}"
+  register: _init_hostname
+  until: not _init_hostname.failed
+  retries: 2
+  delay: 10
+  tags: [never, init]
